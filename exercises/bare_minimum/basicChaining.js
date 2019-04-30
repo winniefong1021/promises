@@ -11,30 +11,27 @@
 var fs = require('fs');
 var Promise = require('bluebird');
 var promiseFunc = require('./promisification.js');
+var pluckFirst = require('./promiseConstructor.js');
 
 fs = Promise.promisifyAll(fs);
 var fetchProfileAndWriteToFile = function(readFilePath, writeFilePath) {
-  // return fs.readFile(readFilePath, 'utf-8', (err, file) => {
-  // .then( get first line of file  = user ) {
-  // return promiseFunc.getGitHubProfileAsync(user, cb)
-  // }
-  // .then () {
-  // return fs.writeFile(writeFilePath, data, cb)
-  //}
-  // });
-  return fs.readFileAsync(readFilePath, 'utf-8', (err, file) => {
-    console.log(file);
-  });
-  // need to import pluckFirstLineFromFileAsync 
+  return pluckFirst.pluckFirstLineFromFileAsync(readFilePath)
+    .then((file) => {
+      return promiseFunc.getGitHubProfileAsync(file);
+    })
+    .then((profile) => {
+      console.log(profile);
+      return fs.writeFileAsync(writeFilePath, profile);
+    })
+    .then((file) => {
+      console.log(file);
+    });
 };
 
 // Export these functions so we can test them
 module.exports = {
   fetchProfileAndWriteToFile: fetchProfileAndWriteToFile
 };
-
-
-// Promise.promisifyAll(db)
 
 // var addNewUserToDatabaseAsync = function(user) {
 //   // The outermost `return` lets us continue the chain
