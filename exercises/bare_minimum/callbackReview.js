@@ -4,7 +4,6 @@
 
 var fs = require('fs');
 var request = require('request');
-var $ = require('jquery');
 
 // This function should retrieve the first line of the file at `filePath`
 var pluckFirstLineFromFile = function (filePath, cb) {
@@ -20,6 +19,13 @@ var pluckFirstLineFromFile = function (filePath, cb) {
 
 // This function should retrieve the status code of a GET request to `url`
 var getStatusCode = function (url, cb) {
+  request(url, (err, res) => {
+    if (err) {
+      cb(err);
+    } else {
+      cb(null, res.statusCode);
+    }
+  });
 };
 
 // Export these functions so we can test them and reuse them in later exercises
