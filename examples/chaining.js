@@ -1,25 +1,20 @@
-// Run this example with `node examples/chaining.js`
-// It will succeed most of the time, but fail occasionally to demonstrate error handling
-
 var Promise = require('bluebird');
 var db = Promise.promisifyAll(require('../lib/db'));
 
 var addNewUserToDatabaseAsync = function(user) {
-  // The outermost `return` lets us continue the chain
-  // after an invocation of `addNewUserToDatabaseAsync`
   return db.findUserInDatabaseAsync(user)
     .then(function(existingUser) {
       if (existingUser) {
-        throw new Error('User already exists!'); // Head straight to `catch`. Do not pass Go, do not collect $200
+        throw new Error('User already exists!');
       } else {
-        return user; // Return a syncronous value
+        return user;
       }
     })
     .then(function(newUser) {
-      return db.hashPasswordAsync(newUser); // Return a promise
+      return db.hashPasswordAsync(newUser);
     })
     .then(function(securedUser) {
-      return db.createAndSaveUserAsync(securedUser); // Return another promise
+      return db.createAndSaveUserAsync(securedUser);
     });
 };
 
@@ -28,6 +23,5 @@ addNewUserToDatabaseAsync({ name: 'Dan', password: 'chickennuggets' })
     console.log('All done!');
   })
   .catch(function(err) {
-    // Will catch any promise rejections or thrown errors in the chain!
     console.log('Oops, caught an error: ', err.message);
   });
